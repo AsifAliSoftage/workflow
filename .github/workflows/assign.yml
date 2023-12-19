@@ -1,0 +1,31 @@
+name:'Automated Issue Assignment'
+ on:
+ issues:
+  types: [opened, labeled]
+jobs:
+  assign:
+   runs-on: ubuntu-latest
+   steps:
+   - name:Checkout code
+     uses:actions/checkout@v2
+   - name: Assign Issue based on Label
+     run: |
+      if [ "${{ github.event_name }}" == "labeled" ];then
+         label_name=$(echo "${{github.event.label.name }}" | tr '[:upper: ]' '[:lower:]')
+         case $lable_name in
+         "bug")
+           assignee="username1"
+           ;;
+           "feature")
+             assignee="username2"
+             ;;
+             assignee= "" # default assignee or leave it black
+             ;;
+             esac
+             if [ -n "$assignee" ]; then
+             echo "Assigning to $assignee"
+              gh issue assign --assignee $assignee "${{ github.event.issue.number }} "
+              fi
+              fi
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
